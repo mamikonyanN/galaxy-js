@@ -3,7 +3,7 @@ const HTMLPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
 module.exports = {
-  entry: './src/canvas.js',
+  entry: './src/',
   mode: 'development',
   output: {
     filename: '[chunkhash].bundle.js',
@@ -15,14 +15,9 @@ module.exports = {
   ],
   module: {
     rules: [
-      {
-        test: /\.(png|jpe?g|gif|svg)$/i,
-        use: [
-          {
-            loader: 'file-loader'
-          }
-        ]
-      }
+      { test: /\.(png|jpe?g|gif|svg)$/i, use: 'file-loader' },
+      { test: /\.ts?$/, loader: 'ts-loader' }
     ]
-  }
+  },
+  resolve: { extensions: ['.webpack.js', '.ts', '.js'] }
 }
