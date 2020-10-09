@@ -17,8 +17,15 @@ canvas.width = innerWidth
 canvas.height = innerHeight
 
 let player: PlayerShip
+let secondsPassed, oldTimeStamp
 
-function init() {
+addEventListener('contextmenu', event => event.preventDefault())
+addEventListener('resize', function() {
+  canvas.width = innerWidth
+  canvas.height = innerHeight
+})
+
+function init(): void {
   const ENEMY_COUNT = 15
   const SPRITE_SIZE = 64
 
@@ -31,13 +38,7 @@ function init() {
     Stars.push(new Star())
 }
 
-let secondsPassed, oldTimeStamp
-
-function animate(timeStamp = 0) {
-
-  secondsPassed = (timeStamp - oldTimeStamp) / 1000
-  oldTimeStamp = timeStamp
-
+function detectCollisions(): void {
   Shells.forEach(shell => {
     const target = shell.hasCollision(Enemies)
     if (target !== null) {
@@ -45,28 +46,38 @@ function animate(timeStamp = 0) {
       target.takeDamage(convertedShell.damage, Enemies)
     }
   })
+}
 
+function updateObjects(secondsPassed): void {
   player.update()
   Stars.forEach(object => object.update(secondsPassed))
   Shells.forEach(object => object.update(secondsPassed))
   Enemies.forEach(enemy => enemy.update(secondsPassed))
+}
 
-
+function clearField(): void {
   context.clearRect(0, 0, canvas.width, canvas.height)
+}
 
+function drawObjects(): void {
   player.draw(context)
   Stars.forEach(star => star.draw(context))
   Enemies.forEach(enemy => enemy.draw(context))
   Shells.forEach(shell => shell.draw(context))
+}
+
+function animate(timeStamp = 0) {
+
+  secondsPassed = (timeStamp - oldTimeStamp) / 1000
+  oldTimeStamp = timeStamp
+
+  detectCollisions()
+  updateObjects(secondsPassed)
+  clearField()
+  drawObjects()
 
   requestAnimationFrame(animate)
 }
 
 init()
 animate()
-
-addEventListener('contextmenu', event => event.preventDefault())
-addEventListener('resize', function() {
-  canvas.width = innerWidth
-  canvas.height = innerHeight
-})
